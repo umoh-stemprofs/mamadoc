@@ -28,3 +28,15 @@ export const SYMPTOM_OPTIONS = [...SYMPTOMS, NONE_OF_THESE] as const
 
 /** Urgent patients may book today + tomorrow + the day after tomorrow (APP_TZ). */
 export const URGENT_WINDOW_DAYS = 3
+
+/** Earliest a slot may start: now + this many minutes (00-global §4). */
+export const LEAD_MINUTES = 30
+
+/** Patients may cancel up to this many hours before the visit starts. */
+export const CANCEL_LEAD_HOURS = 2
+
+/** How many days ahead the slot generator looks. */
+export const BOOKING_DAYS = 14
+
+/** Fallback if EMERGENCY_NUMBER is missing from env (confirm locally). */
+export const EMERGENCY_FALLBACK_NUMBER = '112'
