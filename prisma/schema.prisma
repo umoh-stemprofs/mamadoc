@@ -1,0 +1,190 @@
+// MamaDoc — maternal triage and priority booking
+// Health base: docs/00-global.md §4 · MamaDoc additions: docs/13-mamadoc.md
+// Dates are APP_TZ (Africa/Lagos) calendar dates as "YYYY-MM-DD" strings,
+// times as "HH:mm" strings — never the server clock zone.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PATIENT
+  DOCTOR
+}
+
+enum AppointmentStatus {
+  BOOKED
+  CANCELLED
+  DONE
+  NO_SHOW
+}
+
+enum TriageLevel {
+  NORMAL
+  URGENT
+}
+
+// MamaDoc question 1: "Why are you coming?" Routine checkup / I have a problem.
+// Saved for the doctor; never changes the triage level.
+enum AppointmentReason {
+  ROUTINE
+  PROBLEM
+}
+
+model User {
+  id        String @id @default(cuid())
+  email     String @unique
+  name      String
+  phone     String
+  passHash  String
+  role      Role
+  createdAt DateTime @default(now())
+
+  doctor           Doctor?
+  appointments     Appointment[]       @relation("PatientAppointments")
+  healthProfile    HealthProfile?
+  healthFiles      HealthFile[]
+  notifications    Notification[]
+  emailsReceived   EmailOutbox[]       @relation("EmailToUser")
+  accessLogsActor  AccessLog[]         @relation("AccessActor")
+  accessLogsPatient AccessLog[]        @relation("AccessPatient")
+}
+
+model Doctor {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name   String
+  // MamaDoc: all doctors are "Antenatal"
+  specialty String
+
+  availabilityRules AvailabilityRule[]
+  timeOffs          TimeOff[]
+  appointments      Appointment[]
+}
+
+model AvailabilityRule {
+  id          String @id @default(cuid())
+  doctorId    String
+  doctor      Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  weekday     Int // 0–6, 0 = Sunday
+  startTime   String // "HH:mm"
+  endTime     String // "HH:mm"
+  slotMinutes Int // 15 | 20 | 30 | 45 | 60 (CHECK in migration)
+
+  @@unique([doctorId, weekday, startTime])
+  @@index([doctorId, weekday])
+}
+
+model TimeOff {
+  id       String @id @default(cuid())
+  doctorId String
+  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  date     String // "YYYY-MM-DD"
+
+  @@unique([doctorId, date])
+}
+
+model Appointment {
+  id          String            @id @default(cuid())
+  patientId   String
+  patient     User              @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId    String
+  doctor      Doctor            @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  date        String // "YYYY-MM-DD" in APP_TZ
+  time        String // "HH:mm" in APP_TZ
+  durationMin Int
+  status      AppointmentStatus @default(BOOKED)
+
+  // MamaDoc triage (13-mamadoc.md)
+  triageLevel  TriageLevel
+  reason       AppointmentReason
+  symptomsJson String           @default("[]") // JSON list of symptom labels
+  weeks        Int? // 1–42 or null ("Not sure") — CHECK in migration
+  severe       Boolean          @default(false) // Bleeding / Baby moving less
+
+  meetingUrl String? // doctor "Add meeting link"
+  // No double booking: both unique at the database level.
+  // Set on booking ("doctorId|date|time" / "patientId|date|time"), nulled on cancel.
+  slotKey        String?  @unique
+  patientSlotKey String?  @unique
+  createdAt      DateTime @default(now())
+  cancelledAt    DateTime?
+
+  @@index([doctorId, date])
+  @@index([patientId, date])
+}
+
+// Encrypted JSON: {dob, sex, bloodGroup, allergies, conditions, medications, currentSymptoms, notes}
+// Stored as AES-256-GCM bytes (iv + authTag + ciphertext) — unreadable in the database.
+model HealthProfile {
+  id        String   @id @default(cuid())
+  patientId String   @unique
+  patient   User     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  encPayload Bytes
+  updatedAt DateTime @updatedAt
+}
+
+model HealthFile {
+  id         String   @id @default(cuid())
+  patientId  String
+  patient    User     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  name       String
+  mime       String // pdf | png | jpg (magic bytes checked on upload)
+  sizeBytes  Int // max 2 MB
+  encData    Bytes
+  uploadedAt DateTime @default(now())
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      String // BOOKING | CANCEL | ...
+  title     String
+  body      String
+  createdAt DateTime  @default(now())
+  readAt    DateTime?
+
+  @@index([userId, createdAt])
+}
+
+// The "simulated email" — never actually sent.
+model EmailOutbox {
+  id        String   @id @default(cuid())
+  toUserId  String
+  toUser    User     @relation("EmailToUser", fields: [toUserId], references: [id], onDelete: Cascade)
+  toEmail   String
+  subject   String
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([toUserId, createdAt])
+}
+
+// Every doctor read of a patient profile writes one row here.
+model AccessLog {
+  id        String   @id @default(cuid())
+  actorId   String
+  actor     User     @relation("AccessActor", fields: [actorId], references: [id], onDelete: Cascade)
+  action    String // VIEW_PROFILE | VIEW_FILE | ...
+  patientId String
+  patient   User     @relation("AccessPatient", fields: [patientId], references: [id], onDelete: Cascade)
+  at        DateTime @default(now())
+
+  @@index([patientId, at])
+}
+
+// Lockout: 5 wrong tries in 15 minutes, keyed by email (or ip).
+model LoginAttempt {
+  id  String   @id @default(cuid())
+  key String
+  at  DateTime @default(now())
+
+  @@index([key, at])
+}

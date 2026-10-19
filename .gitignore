@@ -1,0 +1,17 @@
+# secrets — never commit real values
+.env
+.env.local
+.env.*.local
+
+# dependencies
+node_modules/
+
+# next.js (added when the screens step lands)
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# misc
+.DS_Store
+*.log
