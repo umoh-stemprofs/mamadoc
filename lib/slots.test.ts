@@ -55,6 +55,15 @@ describe('validateRules', () => {
     ).toThrowError(/overlap/)
   })
 
+  it('two different doctors may hold overlapping hours on the same weekday', () => {
+    expect(() =>
+      validateRules([
+        { doctorId: 'doc-1', weekday: 2, startTime: '09:00', endTime: '16:00', slotMinutes: 30 },
+        { doctorId: 'doc-2', weekday: 2, startTime: '09:00', endTime: '15:00', slotMinutes: 30 },
+      ]),
+    ).not.toThrow()
+  })
+
   it('rejects an end time before the start time', () => {
     expect(() =>
       validateRules([{ ...base, startTime: '14:00', endTime: '09:00', slotMinutes: 30 }]),

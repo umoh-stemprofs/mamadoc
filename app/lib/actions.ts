@@ -16,16 +16,41 @@ import {
 } from '@/lib/auth'
 import { markDone, setMeetingUrl } from '@/lib/booking'
 import { prisma } from '@/lib/db'
+import { addDayOff, removeDayOff, saveHours } from '@/lib/hours'
 import { homeForRole } from '@/lib/roles'
 import { getSession } from '@/lib/session'
+import { bookVisitFor } from '@/lib/wizard'
 import {
+  addDayOffSchema,
+  bookVisitSchema,
   loginSchema,
   markReadSchema,
   meetingLinkSchema,
+  removeDayOffSchema,
+  saveHoursSchema,
   signupSchema,
 } from '@/lib/validation'
 
-export type ActionState = { error?: string } | undefined
+export type ActionState = { error?: string; saved?: boolean } | undefined
+
+/** The current moment in APP_TZ — never the server's clock zone. */
+function appNow() {
+  const timeZone = process.env.APP_TZ || 'Africa/Lagos'
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(new Date())
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? '00'
+  return {
+    date: `${get('year')}-${get('month')}-${get('day')}`,
+    time: `${get('hour') === '24' ? '00' : get('hour')}:${get('minute')}`,
+  }
+}
 
 export async function loginAction(
   _prev: ActionState,
@@ -130,6 +155,100 @@ export async function saveMeetingLinkAction(
   if (!result.ok) return { error: result.error }
   revalidatePath(`/doctor/visit/${parsed.data.id}`)
   return undefined
+}
+
+/**
+ * Confirm booking (wizard step 4). The patient id comes from the session,
+ * never the form — bookVisitFor re-checks the role again inside.
+ */
+export async function bookVisitAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const session = await getSession()
+  if (!session.userId || !session.role) return { error: 'Log in to book a visit.' }
+
+  const parsed = bookVisitSchema.safeParse({
+    doctorId: formData.get('doctorId'),
+    date: formData.get('date'),
+    time: formData.get('time'),
+    reason: formData.get('reason'),
+    symptoms: formData.getAll('symptoms'),
+    weeks: formData.get('weeks'),
+  })
+  if (!parsed.success) return { error: firstIssue(parsed.error) }
+
+  const result = await bookVisitFor(
+    prisma,
+    { role: session.role, userId: session.userId },
+    parsed.data,
+    appNow(),
+  )
+  if (!result.ok) return { error: result.error }
+
+  revalidatePath('/')
+  revalidatePath('/doctor')
+  redirect(`/book/done?id=${result.appointmentId}`)
+}
+
+/** Doctor saves the whole weekly grid — only their own rules are replaced. */
+export async function saveHoursAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const session = await getSession()
+  if (!session.userId || session.role !== 'DOCTOR') {
+    return { error: 'You can only set your own hours.' }
+  }
+  const parsed = saveHoursSchema.safeParse({ rows: formData.get('rows') })
+  if (!parsed.success) return { error: firstIssue(parsed.error) }
+
+  const result = await saveHours(prisma, session.userId, parsed.data.rows)
+  if (!result.ok) return { error: result.error }
+  revalidatePath('/doctor/hours')
+  revalidatePath('/book')
+  return { error: undefined, saved: true } as ActionState
+}
+
+/** Doctor adds one of their own days off, with a reason. */
+export async function addTimeOffAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const session = await getSession()
+  if (!session.userId || session.role !== 'DOCTOR') {
+    return { error: 'You can only set your own days off.' }
+  }
+  const parsed = addDayOffSchema.safeParse({
+    date: formData.get('date'),
+    reason: formData.get('reason'),
+  })
+  if (!parsed.success) return { error: firstIssue(parsed.error) }
+
+  const result = await addDayOff(prisma, session.userId, parsed.data.date, parsed.data.reason)
+  if (!result.ok) return { error: result.error }
+  revalidatePath('/doctor/hours')
+  revalidatePath('/book')
+  return { error: undefined, saved: true } as ActionState
+}
+
+/** Doctor removes one of their own days off. */
+export async function removeTimeOffAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const session = await getSession()
+  if (!session.userId || session.role !== 'DOCTOR') {
+    return { error: 'You can only change your own days off.' }
+  }
+  const parsed = removeDayOffSchema.safeParse({ id: formData.get('id') })
+  if (!parsed.success) return { error: firstIssue(parsed.error) }
+
+  const result = await removeDayOff(prisma, session.userId, parsed.data.id)
+  if (!result.ok) return { error: result.error }
+  revalidatePath('/doctor/hours')
+  revalidatePath('/book')
+  return { error: undefined } as ActionState
 }
 
 /** Only same-site, absolute-path redirects (never //evil.com). */

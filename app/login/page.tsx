@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { AuthForm } from '@/components/AuthForm'
+import { getCurrentUser } from '@/lib/auth'
 import { homeForRole } from '@/lib/roles'
-import { getSession } from '@/lib/session'
 
 export const metadata = { title: 'Log in' }
 
@@ -14,8 +14,11 @@ export default async function LoginPage({
 }: {
   searchParams: { next?: string }
 }) {
-  const session = await getSession()
-  if (session.userId && session.role) redirect(homeForRole(session.role))
+  // Redirect only when the session still resolves to a real account: a stale
+  // cookie (e.g. after re-seeding) must land on this form, not bounce between
+  // here and / forever.
+  const user = await getCurrentUser()
+  if (user) redirect(homeForRole(user.role))
 
   return (
     <div className="mx-auto w-full max-w-[560px]">

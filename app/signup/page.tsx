@@ -1,13 +1,14 @@
 import { redirect } from 'next/navigation'
 import { AuthForm } from '@/components/AuthForm'
+import { getCurrentUser } from '@/lib/auth'
 import { homeForRole } from '@/lib/roles'
-import { getSession } from '@/lib/session'
 
 export const metadata = { title: 'Create account' }
 
 export default async function SignupPage() {
-  const session = await getSession()
-  if (session.userId && session.role) redirect(homeForRole(session.role))
+  // DB-verified session, same as /login — a stale cookie must not redirect-loop.
+  const user = await getCurrentUser()
+  if (user) redirect(homeForRole(user.role))
 
   return (
     <div className="mx-auto w-full max-w-[560px]">

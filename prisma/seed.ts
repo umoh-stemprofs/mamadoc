@@ -211,7 +211,8 @@ async function main(): Promise<void> {
     { doctorId: docObi.id, weekday: 2, startTime: '09:00', endTime: '16:00', slotMinutes: 30 },
     { doctorId: docObi.id, weekday: 3, startTime: '09:00', endTime: '16:00', slotMinutes: 30 },
     { doctorId: docObi.id, weekday: 4, startTime: '09:00', endTime: '16:00', slotMinutes: 30 },
-    { doctorId: docObi.id, weekday: 5, startTime: '10:00', endTime: '15:00', slotMinutes: 45 },
+    // Friday window must divide by 45 exactly (00-global §4): 10:00–14:30 = 6 slots.
+    { doctorId: docObi.id, weekday: 5, startTime: '10:00', endTime: '14:30', slotMinutes: 45 },
     // Dr. Yusuf — Sun, Tue, Thu, Sat
     { doctorId: docYusuf.id, weekday: 0, startTime: '10:00', endTime: '14:00', slotMinutes: 30 },
     { doctorId: docYusuf.id, weekday: 2, startTime: '09:00', endTime: '15:00', slotMinutes: 30 },

@@ -82,10 +82,11 @@ model AvailabilityRule {
 }
 
 model TimeOff {
-  id       String @id @default(cuid())
+  id       String  @id @default(cuid())
   doctorId String
-  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  date     String // "YYYY-MM-DD"
+  doctor   Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  date     String  // "YYYY-MM-DD"
+  reason   String? // why the doctor is away (shown on the day card)
 
   @@unique([doctorId, date])
 }

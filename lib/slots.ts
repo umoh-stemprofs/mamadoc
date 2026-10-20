@@ -49,11 +49,12 @@ export function weekdayOf(isoDate: string): number {
 }
 
 /**
- * Rules for one weekday must not overlap, end must be after start, the slot
- * length must be one of 15/20/30/45/60 and must fit exactly.
+ * One doctor's rules for a weekday must not overlap (two different doctors
+ * may well work the same weekday), end must be after start, the slot length
+ * must be one of 15/20/30/45/60 and must fit exactly.
  */
 export function validateRules(rules: readonly SlotRule[]): void {
-  const byWeekday = new Map<number, SlotRule[]>()
+  const byDoctorWeekday = new Map<string, SlotRule[]>()
   for (const rule of rules) {
     if (!Number.isInteger(rule.weekday) || rule.weekday < 0 || rule.weekday > 6) {
       throw new SlotsError(`Weekday must be a number from 0 to 6, got "${rule.weekday}".`)
@@ -76,7 +77,8 @@ export function validateRules(rules: readonly SlotRule[]): void {
         `The ${rule.slotMinutes}-minute slot length does not fit between ${rule.startTime} and ${rule.endTime}.`,
       )
     }
-    const list = byWeekday.get(rule.weekday) ?? []
+    const dayKey = `${rule.doctorId}|${rule.weekday}`
+    const list = byDoctorWeekday.get(dayKey) ?? []
     for (const other of list) {
       const otherStart = toMinutes(other.startTime)
       const otherEnd = toMinutes(other.endTime)
@@ -87,7 +89,7 @@ export function validateRules(rules: readonly SlotRule[]): void {
       }
     }
     list.push(rule)
-    byWeekday.set(rule.weekday, list)
+    byDoctorWeekday.set(dayKey, list)
   }
 }
 
