@@ -35,12 +35,12 @@ export function MeetingLinkForm({ visitId, initialUrl }: { visitId: string; init
             required
             placeholder="https://meet.example.com/visit"
             defaultValue={state?.url ?? initialUrl ?? ''}
-            className="block w-full rounded-input border border-line bg-surface px-3 py-3 text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent"
+            className="block w-full rounded-input border-[1.5px] border-[#d1d5db] bg-surface px-3 py-3 text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent"
           />
         </div>
         <button
           type="submit"
-          className="flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-accent px-5 text-sm font-semibold text-white transition hover:opacity-90"
+          className="flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-accent px-5 text-sm font-semibold text-white transition hover:bg-accent-deep"
         >
           <Video className="h-4 w-4" aria-hidden="true" />
           Save link
@@ -51,7 +51,7 @@ export function MeetingLinkForm({ visitId, initialUrl }: { visitId: string; init
         name="intent"
         value="generate"
         formNoValidate
-        className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg border border-line bg-surface px-5 text-sm font-medium text-ink transition hover:bg-bg"
+        className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg border-2 border-line bg-surface px-5 text-sm font-semibold text-ink transition hover:bg-lav-high"
       >
         <Sparkles className="h-4 w-4" aria-hidden="true" />
         Generate meeting link

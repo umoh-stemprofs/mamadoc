@@ -43,13 +43,13 @@ export default async function VisitPage({ params }: { params: { id: string } }) 
         Back to today&apos;s queue
       </Link>
 
-      <section className="rounded-card border border-line bg-surface p-5 shadow-card">
+      <section className="rounded-card border-2 border-lav bg-surface p-5 shadow-card">
         <div className="flex flex-wrap items-center gap-2">
           <StatusPill status={visit.status} />
           <TriageTag level={visit.triageLevel} />
           {visit.reason === 'PROBLEM' && visit.triageLevel === 'NORMAL' && <ProblemTag />}
         </div>
-        <h1 className="mt-3 text-2xl font-semibold leading-8 text-ink">
+        <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-ink">
           {visit.patient.name}
         </h1>
         <p className="mt-1 flex items-center gap-2 text-muted">
@@ -100,8 +100,8 @@ export default async function VisitPage({ params }: { params: { id: string } }) 
         </div>
       </section>
 
-      <section className="rounded-card border border-line bg-surface p-5 shadow-card">
-        <h2 className="text-xl font-semibold leading-7 text-ink">Video call</h2>
+      <section className="rounded-card border-2 border-lav bg-surface p-5 shadow-card">
+        <h2 className="text-2xl font-extrabold text-ink">Video call</h2>
         <div className="mt-3">
           <MeetingLinkForm visitId={visit.id} initialUrl={visit.meetingUrl} />
         </div>
@@ -113,7 +113,7 @@ export default async function VisitPage({ params }: { params: { id: string } }) 
             <input type="hidden" name="id" value={visit.id} />
             <button
               type="submit"
-              className="flex min-h-[56px] items-center gap-2 rounded-lg bg-accent px-6 text-base font-semibold text-white transition hover:opacity-90 sm:min-h-[48px]"
+              className="flex min-h-[56px] items-center gap-2 rounded-lg bg-accent px-6 text-base font-semibold text-white transition hover:bg-accent-deep sm:min-h-[48px]"
             >
               <Check className="h-5 w-5" aria-hidden="true" />
               Mark done
@@ -127,7 +127,7 @@ export default async function VisitPage({ params }: { params: { id: string } }) 
         )}
         <Link
           href="/doctor"
-          className="flex min-h-[48px] items-center gap-2 rounded-lg border border-line bg-surface px-5 text-sm font-medium text-ink hover:bg-bg"
+          className="flex min-h-[48px] items-center gap-2 rounded-lg border-2 border-line bg-surface px-5 text-sm font-semibold text-ink hover:bg-lav-high"
         >
           <User className="h-4 w-4" aria-hidden="true" />
           Back to queue

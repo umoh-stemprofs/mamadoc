@@ -271,7 +271,7 @@ describe('sanitizeWizardParams / wizardStep', () => {
   it('derives the step from what the URL carries', () => {
     expect(wizardStep({ doctorId: null, date: null, time: null, q: null })).toBe(1)
     expect(wizardStep({ doctorId: 'd1', date: null, time: null, q: null })).toBe(2)
-    expect(wizardStep({ doctorId: 'd1', date: '2026-10-21', time: null, q: null })).toBe(3)
-    expect(wizardStep({ doctorId: 'd1', date: '2026-10-21', time: '09:30', q: null })).toBe(4)
+    expect(wizardStep({ doctorId: 'd1', date: '2026-10-21', time: null, q: null })).toBe(2)
+    expect(wizardStep({ doctorId: 'd1', date: '2026-10-21', time: '09:30', q: null })).toBe(3)
   })
 })

@@ -22,12 +22,12 @@ type Props = {
 }
 
 const inputClass =
-  'block w-full rounded-input border border-line bg-surface px-3 py-3 text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent'
+  'block w-full rounded-input border-[1.5px] border-[#d1d5db] bg-surface px-3 py-3 text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent'
 const labelClass = 'mb-1 block text-sm font-medium text-muted'
 const primaryButton =
-  'flex min-h-[56px] w-full items-center justify-center rounded-lg bg-accent px-4 text-base font-semibold text-white transition hover:opacity-90 sm:min-h-[48px]'
+  'flex min-h-[56px] w-full items-center justify-center rounded-lg bg-accent px-4 text-base font-semibold text-white transition hover:bg-accent-deep sm:min-h-[48px]'
 const secondaryButton =
-  'flex min-h-[48px] w-full items-center justify-center rounded-lg border border-line bg-surface px-4 text-sm font-medium text-ink transition hover:bg-bg'
+  'flex min-h-[48px] w-full items-center justify-center rounded-lg border-2 border-line bg-surface px-4 text-sm font-semibold text-ink transition hover:bg-lav-high'
 
 export function AuthForm({
   mode,
@@ -44,7 +44,7 @@ export function AuthForm({
   const isLogin = mode === 'login'
 
   return (
-    <div className="rounded-card border border-line bg-surface p-6 shadow-card">
+    <div className="rounded-card border-2 border-lav bg-surface p-6 shadow-card">
       <form action={formAction} className="flex flex-col gap-4">
         {state?.error && (
           <p

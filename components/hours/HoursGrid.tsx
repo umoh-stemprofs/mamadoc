@@ -12,7 +12,7 @@ import { WEEKDAY_NAMES, WEEKDAY_ORDER, type HoursEntry } from '@/lib/hoursShared
 const SLOT_OPTIONS = [15, 20, 30, 45, 60]
 
 const timeInput =
-  'rounded-input border border-line bg-surface px-2 py-2 text-sm tabular-nums text-ink focus:outline-none focus:ring-2 focus:ring-accent disabled:bg-bg disabled:text-muted'
+  'rounded-input border-[1.5px] border-[#d1d5db] bg-surface px-2 py-2 text-sm tabular-nums text-ink focus:outline-none focus:ring-2 focus:ring-accent disabled:bg-bg disabled:text-muted'
 
 export function HoursGrid({ initial }: { initial: HoursEntry[] }) {
   const [state, formAction] = useFormState<ActionState, FormData>(
@@ -56,7 +56,7 @@ export function HoursGrid({ initial }: { initial: HoursEntry[] }) {
 
       <input type="hidden" name="rows" value={JSON.stringify(rows)} />
 
-      <ul className="flex flex-col divide-y divide-line rounded-card border border-line bg-surface shadow-card">
+      <ul className="flex flex-col divide-y divide-line rounded-card border-2 border-lav bg-surface shadow-card">
         {rows.map((row) => (
           <li key={row.weekday} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
             <div className="flex min-w-[150px] items-center gap-3">
@@ -122,7 +122,7 @@ export function HoursGrid({ initial }: { initial: HoursEntry[] }) {
 
       <button
         type="submit"
-        className="flex min-h-[48px] items-center justify-center gap-2 self-start rounded-lg bg-accent px-5 text-sm font-semibold text-white transition hover:opacity-90"
+        className="flex min-h-[48px] items-center justify-center gap-2 self-start rounded-lg bg-accent px-5 text-sm font-semibold text-white transition hover:bg-accent-deep"
       >
         <Save className="h-4 w-4" aria-hidden="true" />
         Save hours

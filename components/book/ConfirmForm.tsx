@@ -1,9 +1,11 @@
 'use client'
 
-// Step 4 "Check and confirm" form (S-B-CONFIRM). The wizard state travels in
-// the URL; this posts the last choices to the server action and shows the
-// one-sentence error if the slot was just taken.
-import { AlertCircle } from 'lucide-react'
+// Step 3 "Check and confirm" (maternal-care mockup: two big picture-style
+// reason cards + one unmissable green confirm button). The wizard state
+// travels in the URL; this posts the last choices to the server action and
+// shows the one-sentence error if the slot was just taken.
+import type { ReactNode } from 'react'
+import { AlertCircle, AlertTriangle, Check, CheckCircle2, Heart } from 'lucide-react'
 import { useFormState } from 'react-dom'
 import { bookVisitAction, type ActionState } from '@/app/lib/actions'
 
@@ -11,27 +13,30 @@ type Props = {
   doctorId: string
   date: string
   time: string
-  /** Safety notice (server-rendered) shown above the primary button. */
-  notice?: React.ReactNode
+  notice?: ReactNode
+  back?: ReactNode
 }
 
-const primaryButton =
-  'flex min-h-[56px] w-full items-center justify-center rounded-lg bg-accent px-4 text-base font-semibold text-white transition hover:opacity-90 sm:min-h-[48px]'
+const card =
+  'relative flex cursor-pointer flex-col items-center rounded-card border-4 border-line bg-surface p-6 text-center transition-all has-[:checked]:border-accent has-[:checked]:bg-accent-soft/40 has-[:checked]:shadow-dialog'
 
-export function ConfirmForm({ doctorId, date, time, notice }: Props) {
+const checkBadge =
+  'absolute right-4 top-4 hidden h-10 w-10 items-center justify-center rounded-full bg-accent text-white shadow has-[:checked]:flex'
+
+export function ConfirmForm({ doctorId, date, time, notice, back }: Props) {
   const [state, formAction] = useFormState<ActionState, FormData>(
     bookVisitAction,
     undefined,
   )
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction} className="flex flex-col gap-6">
       {state?.error && (
         <p
           role="alert"
-          className="flex items-start gap-2 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger"
+          className="flex items-start gap-2 rounded-card border-2 border-[#fca5a5] bg-danger-bg px-4 py-3 text-base font-semibold text-danger"
         >
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
           {state.error}
         </p>
       )}
@@ -40,39 +45,69 @@ export function ConfirmForm({ doctorId, date, time, notice }: Props) {
       <input type="hidden" name="date" value={date} />
       <input type="hidden" name="time" value={time} />
 
-      <fieldset>
-        <legend className="mb-1 block text-sm font-medium text-muted">
-          Why are you coming? (saved for the doctor)
-        </legend>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <label className="flex min-h-[48px] flex-1 cursor-pointer items-center gap-3 rounded-input border border-line bg-surface px-4 py-3 text-ink has-[:checked]:border-accent has-[:checked]:bg-accent/5">
-            <input
-              type="radio"
-              name="reason"
-              value="ROUTINE"
-              required
-              defaultChecked
-              className="h-5 w-5 accent-[var(--accent)]"
-            />
-            <span className="text-sm font-medium">Routine checkup</span>
-          </label>
-          <label className="flex min-h-[48px] flex-1 cursor-pointer items-center gap-3 rounded-input border border-line bg-surface px-4 py-3 text-ink has-[:checked]:border-accent has-[:checked]:bg-accent/5">
-            <input
-              type="radio"
-              name="reason"
-              value="PROBLEM"
-              className="h-5 w-5 accent-[var(--accent)]"
-            />
-            <span className="text-sm font-medium">I have a problem</span>
-          </label>
-        </div>
-      </fieldset>
+      <div
+        role="radiogroup"
+        aria-label="Reason for the visit"
+        className="grid grid-cols-1 gap-4 md:grid-cols-2"
+      >
+        <label className={card}>
+          <input
+            type="radio"
+            name="reason"
+            value="ROUTINE"
+            required
+            defaultChecked
+            className="sr-only"
+          />
+          <span className={checkBadge} aria-hidden="true">
+            <Check className="h-6 w-6" />
+          </span>
+          <span
+            className="flex h-24 w-24 items-center justify-center rounded-full bg-accent text-white shadow-md"
+            aria-hidden="true"
+          >
+            <Heart className="h-12 w-12" />
+          </span>
+          <span className="mt-4 block text-2xl font-bold text-ink">
+            Routine Pregnancy Checkup
+          </span>
+          <span className="mt-1 block text-base font-medium text-muted">
+            Regular check for mother and baby
+          </span>
+        </label>
 
-      {notice}
+        <label className={card}>
+          <input type="radio" name="reason" value="PROBLEM" className="sr-only" />
+          <span className={checkBadge} aria-hidden="true">
+            <Check className="h-6 w-6" />
+          </span>
+          <span
+            className="flex h-24 w-24 items-center justify-center rounded-full bg-danger-bg text-danger shadow-md"
+            aria-hidden="true"
+          >
+            <AlertTriangle className="h-12 w-12" />
+          </span>
+          <span className="mt-4 block text-2xl font-bold text-ink">
+            I Feel Sick or In Pain
+          </span>
+          <span className="mt-1 block text-base font-medium text-muted">
+            Headache, fever, pains, or worry
+          </span>
+        </label>
+      </div>
 
-      <button type="submit" className={primaryButton}>
-        Confirm booking
+      <button
+        type="submit"
+        className="flex min-h-[84px] w-full items-center justify-center gap-3 rounded-card bg-[#006e2d] px-6 py-5 text-2xl font-extrabold text-white shadow-lift transition hover:bg-[#005a24] active:scale-[0.99] md:text-3xl"
+      >
+        <CheckCircle2 className="h-9 w-9" aria-hidden="true" />
+        YES, BOOK MY VISIT NOW
       </button>
+
+      {back && <div className="text-center">{back}</div>}
+      {notice && (
+        <div className="rounded-card border-2 border-lav bg-lav-low p-4">{notice}</div>
+      )}
     </form>
   )
 }

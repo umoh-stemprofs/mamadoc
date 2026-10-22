@@ -22,8 +22,8 @@ function Section({
   children: React.ReactNode
 }) {
   return (
-    <section className="rounded-card border border-line bg-surface p-6 shadow-card">
-      <h2 className="flex items-center gap-2 text-xl font-semibold leading-7 text-ink">
+    <section className="rounded-card border-2 border-lav bg-surface p-6 shadow-card">
+      <h2 className="flex items-center gap-2 text-2xl font-extrabold text-ink">
         <span className="text-accent">{icon}</span>
         {title}
       </h2>
@@ -37,7 +37,7 @@ export default function LimitationsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold leading-8 text-ink">
+        <h1 className="text-3xl font-extrabold tracking-tight text-ink">
           Limitations of this prototype
         </h1>
         <p className="mt-1 text-muted">
@@ -97,7 +97,7 @@ export default function LimitationsPage() {
 
       <Link
         href="/login"
-        className="flex min-h-[48px] items-center gap-2 self-start rounded-lg border border-line bg-surface px-5 text-sm font-medium text-ink hover:bg-bg"
+        className="flex min-h-[48px] items-center gap-2 self-start rounded-lg border-2 border-line bg-surface px-5 text-sm font-semibold text-ink hover:bg-lav-high"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         Back

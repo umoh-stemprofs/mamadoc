@@ -18,7 +18,7 @@ export default async function DoctorHome() {
   const doctor = await prisma.doctor.findUnique({ where: { userId: user.id } })
   if (!doctor) {
     return (
-      <div className="rounded-card border border-line bg-surface p-8 text-center shadow-card">
+      <div className="rounded-card border-2 border-lav bg-surface p-8 text-center shadow-card">
         <p className="font-medium text-ink">Your doctor profile is missing.</p>
         <p className="mt-1 text-sm text-muted">Ask the clinic admin to re-seed the demo data.</p>
       </div>
@@ -45,12 +45,12 @@ export default async function DoctorHome() {
     <div className="flex flex-col gap-8">
       <section className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold leading-8 text-ink">Today&apos;s patients</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight text-ink">Today&apos;s patients</h1>
           <p className="mt-1 text-muted">{formatShortDate(today)} · urgent patients come first.</p>
         </div>
         <Link
           href="/doctor/hours"
-          className="flex min-h-[48px] items-center gap-2 rounded-lg border border-line bg-surface px-4 text-sm font-medium text-ink hover:bg-bg"
+          className="flex min-h-[48px] items-center gap-2 rounded-lg border-2 border-line bg-surface px-4 text-sm font-semibold text-ink hover:bg-lav-high"
         >
           <CalendarClock className="h-4 w-4" aria-hidden="true" />
           My hours
@@ -58,14 +58,14 @@ export default async function DoctorHome() {
       </section>
 
       <section aria-labelledby="week" className="flex flex-col gap-3">
-        <h2 id="week" className="text-xl font-semibold leading-7 text-ink">
+        <h2 id="week" className="text-2xl font-extrabold text-ink">
           This week
         </h2>
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
           {weekDates.map((date, i) => (
             <li
               key={date}
-              className="rounded-card border border-line bg-surface p-4 shadow-card"
+              className="rounded-card border-2 border-lav bg-surface p-4 shadow-card"
             >
               <p className="text-sm text-muted">
                 {i === 0 ? 'Today' : weekdayShort(date)}{' '}
@@ -81,12 +81,12 @@ export default async function DoctorHome() {
       </section>
 
       <section aria-labelledby="queue" className="flex flex-col gap-3">
-        <h2 id="queue" className="text-xl font-semibold leading-7 text-ink">
+        <h2 id="queue" className="text-2xl font-extrabold text-ink">
           The queue
         </h2>
 
         {queue.length === 0 ? (
-          <div className="rounded-card border border-line bg-surface p-8 text-center shadow-card">
+          <div className="rounded-card border-2 border-lav bg-surface p-8 text-center shadow-card">
             <Inbox className="mx-auto h-8 w-8 text-muted" aria-hidden="true" />
             <p className="mt-2 font-medium text-ink">No patients booked today.</p>
             <p className="mt-1 text-sm text-muted">
@@ -102,7 +102,7 @@ export default async function DoctorHome() {
               return (
                 <li
                   key={item.id}
-                  className={`flex flex-col gap-3 rounded-card border border-line bg-surface p-4 shadow-card sm:flex-row sm:items-center ${
+                  className={`flex flex-col gap-3 rounded-card border-2 border-lav bg-surface p-4 shadow-card sm:flex-row sm:items-center ${
                     urgent ? 'border-l-4 border-l-danger' : 'border-l-4 border-l-line'
                   }`}
                 >
@@ -140,7 +140,7 @@ export default async function DoctorHome() {
                   <div className="flex shrink-0 gap-2">
                     <Link
                       href={`/doctor/visit/${item.id}`}
-                      className="flex min-h-[48px] items-center gap-2 rounded-lg border border-line bg-surface px-4 text-sm font-medium text-ink hover:bg-bg"
+                      className="flex min-h-[48px] items-center gap-2 rounded-lg border-2 border-line bg-surface px-4 text-sm font-semibold text-ink hover:bg-lav-high"
                     >
                       <User className="h-4 w-4" aria-hidden="true" />
                       Open
@@ -149,7 +149,7 @@ export default async function DoctorHome() {
                       <input type="hidden" name="id" value={item.id} />
                       <button
                         type="submit"
-                        className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-white transition hover:opacity-90"
+                        className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-white transition hover:bg-accent-deep"
                       >
                         <Check className="h-4 w-4" aria-hidden="true" />
                         Done

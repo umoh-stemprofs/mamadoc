@@ -19,18 +19,28 @@ const config: Config = {
         'danger-bg': 'var(--danger-bg)',
         info: 'var(--info)',
         'info-bg': 'var(--info-bg)',
+        // Direct tokens from the maternal-care mockups
+        'accent-deep': '#780037', // primary (hover/deep berry)
+        'accent-soft': '#ffd9e0', // primary-fixed
+        'rose-bg': '#fff5f7', // soft help-card background
+        'lav-low': '#f1f3ff', // surface-container-low
+        lav: '#e9edff', // surface-container
+        'lav-high': '#e1e8fd', // surface-container-high
+        'green-deep': '#008a38', // confirmation hero green
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-jakarta)', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         input: '8px',
-        card: '12px',
+        card: '16px',
         dialog: '16px',
+        panel: '24px',
       },
       boxShadow: {
-        card: '0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10)',
-        dialog: '0 12px 24px -4px rgba(16,24,40,.16)',
+        card: '0 2px 6px -1px rgba(17,24,39,.04), 0 1px 2px rgba(17,24,39,.03)',
+        dialog: '0 8px 20px -4px rgba(157,23,77,.06), 0 4px 8px -2px rgba(17,24,39,.04)',
+        lift: '0 12px 28px -6px rgba(17,24,39,.12)',
       },
     },
   },

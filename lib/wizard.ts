@@ -52,12 +52,11 @@ export function sanitizeWizardParams(params: {
   }
 }
 
-/** Which step the URL asks for: 1 doctor · 2 day · 3 time · 4 confirm. */
-export function wizardStep(params: WizardParams): 1 | 2 | 3 | 4 {
+/** Which step the URL asks for: 1 doctor · 2 day and time · 3 confirm. */
+export function wizardStep(params: WizardParams): 1 | 2 | 3 {
   if (!params.doctorId) return 1
-  if (!params.date) return 2
-  if (!params.time) return 3
-  return 4
+  if (!params.date || !params.time) return 2
+  return 3
 }
 
 export type BookForWizardInput = {

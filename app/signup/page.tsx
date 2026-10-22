@@ -12,7 +12,7 @@ export default async function SignupPage() {
 
   return (
     <div className="mx-auto w-full max-w-[560px]">
-      <h1 className="text-2xl font-semibold leading-8 text-ink">Create account</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight text-ink">Create account</h1>
       <p className="mb-6 mt-1 text-muted">
         Patients create their own account. Doctor accounts are made by the clinic.
       </p>

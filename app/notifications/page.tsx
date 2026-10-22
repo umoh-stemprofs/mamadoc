@@ -38,7 +38,7 @@ export default async function NotificationsPage({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold leading-8 text-ink">Notifications</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight text-ink">Notifications</h1>
         <p className="mt-1 text-muted">
           {showEmails
             ? 'Simulated emails — nothing is actually sent.'
@@ -73,7 +73,7 @@ export default async function NotificationsPage({
         notifications.length === 0 ? (
           <EmptyCard text="No notifications yet." />
         ) : (
-          <ul className="flex flex-col divide-y divide-line rounded-card border border-line bg-surface shadow-card">
+          <ul className="flex flex-col divide-y divide-line rounded-card border-2 border-lav bg-surface shadow-card">
             {notifications.map((n) => {
               const inner = (
                 <>
@@ -123,7 +123,7 @@ export default async function NotificationsPage({
       ) : emails.length === 0 ? (
         <EmptyCard text="No simulated emails yet." />
       ) : (
-        <ul className="flex flex-col divide-y divide-line rounded-card border border-line bg-surface shadow-card">
+        <ul className="flex flex-col divide-y divide-line rounded-card border-2 border-lav bg-surface shadow-card">
           {emails.map((mail) => (
             <li key={mail.id} className="flex flex-col gap-1 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -145,7 +145,7 @@ export default async function NotificationsPage({
 
 function EmptyCard({ text }: { text: string }) {
   return (
-    <div className="rounded-card border border-line bg-surface p-8 text-center shadow-card">
+    <div className="rounded-card border-2 border-lav bg-surface p-8 text-center shadow-card">
       <Bell className="mx-auto h-8 w-8 text-muted" aria-hidden="true" />
       <p className="mt-2 text-muted">{text}</p>
     </div>

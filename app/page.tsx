@@ -4,6 +4,7 @@ import { StatusPill, TriageTag } from '@/components/pills'
 import { requireRole } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { formatShortDate } from '@/lib/format'
+import { doctorPhoto } from '@/lib/photos'
 
 export const metadata = { title: 'Home' }
 
@@ -25,11 +26,12 @@ export default async function PatientHome() {
       take: 5,
     }),
   ])
+  const photo = next ? doctorPhoto(next.doctor.name) : null
 
   return (
     <div className="flex flex-col gap-8">
       <section>
-        <h1 className="text-2xl font-semibold leading-8 text-ink">
+        <h1 className="text-3xl font-extrabold tracking-tight text-ink">
           Hello, {user.name.split(' ')[0]}
         </h1>
         <p className="mt-1 text-muted">Here is your next visit and your latest updates.</p>
@@ -37,12 +39,12 @@ export default async function PatientHome() {
 
       <section aria-labelledby="next-visit" className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h2 id="next-visit" className="text-xl font-semibold leading-7 text-ink">
+          <h2 id="next-visit" className="text-2xl font-extrabold text-ink">
             Next appointment
           </h2>
           <Link
             href="/book"
-            className="flex min-h-[48px] items-center gap-2 rounded-lg bg-accent px-5 text-base font-semibold text-white transition hover:opacity-90"
+            className="flex min-h-[48px] items-center gap-2 rounded-lg bg-accent px-5 text-base font-semibold text-white transition hover:bg-accent-deep"
           >
             <CalendarPlus className="h-5 w-5" aria-hidden="true" />
             Book a visit
@@ -50,7 +52,7 @@ export default async function PatientHome() {
         </div>
 
         {next ? (
-          <article className="rounded-card border border-line bg-surface p-5 shadow-card">
+          <article className="rounded-card border-2 border-lav bg-surface p-5 shadow-card">
             <div className="flex flex-wrap items-center gap-2">
               <StatusPill status={next.status} />
               <TriageTag level={next.triageLevel} />
@@ -60,8 +62,20 @@ export default async function PatientHome() {
                 </span>
               )}
             </div>
-            <p className="mt-3 text-lg font-semibold leading-7 text-ink">{next.doctor.name}</p>
-            <p className="text-muted">{next.doctor.specialty}</p>
+            <div className="mt-3 flex items-center gap-4">
+              {photo ? (
+                // eslint-disable-next-line @next/next/no-img-element -- approved Google-hosted mockup portrait
+                <img
+                  src={photo}
+                  alt=""
+                  className="h-14 w-14 shrink-0 rounded-full object-cover ring-2 ring-accent/20"
+                />
+              ) : null}
+              <div className="min-w-0">
+                <p className="truncate text-xl font-extrabold text-ink">{next.doctor.name}</p>
+                <p className="truncate font-medium text-muted">{next.doctor.specialty}</p>
+              </div>
+            </div>
             <p className="mt-2 text-ink">
               {formatShortDate(next.date)} at {next.time}
             </p>
@@ -71,7 +85,7 @@ export default async function PatientHome() {
                   href={next.meetingUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex min-h-[48px] items-center gap-2 rounded-lg border border-line bg-surface px-4 text-sm font-medium text-ink hover:bg-bg"
+                  className="flex min-h-[48px] items-center gap-2 rounded-lg border-2 border-line bg-surface px-4 text-sm font-semibold text-ink hover:bg-lav-high"
                 >
                   <Video className="h-4 w-4" aria-hidden="true" />
                   Join call
@@ -80,7 +94,7 @@ export default async function PatientHome() {
             </div>
           </article>
         ) : (
-          <article className="rounded-card border border-line bg-surface p-8 text-center shadow-card">
+          <article className="rounded-card border-2 border-lav bg-surface p-8 text-center shadow-card">
             <CheckCircle2 className="mx-auto h-8 w-8 text-muted" aria-hidden="true" />
             <p className="mt-2 font-medium text-ink">No visit booked yet.</p>
             <p className="mt-1 text-sm text-muted">
@@ -92,7 +106,7 @@ export default async function PatientHome() {
 
       <section aria-labelledby="recent" className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h2 id="recent" className="text-xl font-semibold leading-7 text-ink">
+          <h2 id="recent" className="text-2xl font-extrabold text-ink">
             Recent notifications
           </h2>
           <Link
@@ -105,11 +119,11 @@ export default async function PatientHome() {
         </div>
 
         {notifications.length === 0 ? (
-          <p className="rounded-card border border-line bg-surface p-5 text-muted shadow-card">
+          <p className="rounded-card border-2 border-lav bg-surface p-5 text-muted shadow-card">
             No notifications yet.
           </p>
         ) : (
-          <ul className="flex flex-col divide-y divide-line rounded-card border border-line bg-surface shadow-card">
+          <ul className="flex flex-col divide-y divide-line rounded-card border-2 border-lav bg-surface shadow-card">
             {notifications.map((n) => (
               <li key={n.id} className="flex items-start gap-3 p-4">
                 <span

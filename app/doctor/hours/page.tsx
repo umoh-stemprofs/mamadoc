@@ -21,7 +21,7 @@ export default async function MyHoursPage() {
   })
   if (!doctor) {
     return (
-      <div className="rounded-card border border-line bg-surface p-8 text-center shadow-card">
+      <div className="rounded-card border-2 border-lav bg-surface p-8 text-center shadow-card">
         <p className="font-medium text-ink">Your doctor profile is missing.</p>
         <p className="mt-1 text-sm text-muted">Ask the clinic admin to re-seed the demo data.</p>
       </div>
@@ -52,7 +52,7 @@ export default async function MyHoursPage() {
   return (
     <div className="mx-auto flex w-full max-w-[560px] flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-semibold leading-8 text-ink">My hours</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight text-ink">My hours</h1>
         <p className="mt-1 text-muted">
           Patients see free times from these hours. Times are in your clinic&apos;s
           time zone (Africa/Lagos).
@@ -60,14 +60,14 @@ export default async function MyHoursPage() {
       </div>
 
       <section aria-labelledby="weekdays" className="flex flex-col gap-4">
-        <h2 id="weekdays" className="text-xl font-semibold leading-7 text-ink">
+        <h2 id="weekdays" className="text-2xl font-extrabold text-ink">
           Every week
         </h2>
         <HoursGrid initial={entries} />
       </section>
 
       <section aria-labelledby="days-off" className="flex flex-col gap-4">
-        <h2 id="days-off" className="text-xl font-semibold leading-7 text-ink">
+        <h2 id="days-off" className="text-2xl font-extrabold text-ink">
           Days off
         </h2>
         <p className="text-sm text-muted">

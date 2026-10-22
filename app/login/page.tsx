@@ -22,7 +22,7 @@ export default async function LoginPage({
 
   return (
     <div className="mx-auto w-full max-w-[560px]">
-      <h1 className="text-2xl font-semibold leading-8 text-ink">Log in</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight text-ink">Log in</h1>
       <p className="mb-6 mt-1 text-muted">
         Book antenatal visits and keep your checkups in one place.
       </p>

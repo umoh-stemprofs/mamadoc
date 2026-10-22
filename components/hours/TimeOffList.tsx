@@ -15,7 +15,7 @@ import { formatShortDate } from '@/lib/format'
 type DayOff = { id: string; date: string; reason: string | null }
 
 const inputClass =
-  'rounded-input border border-line bg-surface px-3 py-2.5 text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent'
+  'rounded-input border-[1.5px] border-[#d1d5db] bg-surface px-3 py-2.5 text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent'
 
 export function TimeOffList({ initial }: { initial: DayOff[] }) {
   const [addState, addFormAction] = useFormState<ActionState, FormData>(
@@ -84,7 +84,7 @@ export function TimeOffList({ initial }: { initial: DayOff[] }) {
           </div>
           <button
             type="submit"
-            className="flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-white transition hover:opacity-90"
+            className="flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-white transition hover:bg-accent-deep"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
             Add day off
@@ -93,12 +93,12 @@ export function TimeOffList({ initial }: { initial: DayOff[] }) {
       </form>
 
       {days.length === 0 ? (
-        <div className="rounded-card border border-line bg-surface p-6 text-center shadow-card">
+        <div className="rounded-card border-2 border-lav bg-surface p-6 text-center shadow-card">
           <CalendarOff className="mx-auto h-8 w-8 text-muted" aria-hidden="true" />
           <p className="mt-2 text-muted">No days off marked.</p>
         </div>
       ) : (
-        <ul className="flex flex-col divide-y divide-line rounded-card border border-line bg-surface shadow-card">
+        <ul className="flex flex-col divide-y divide-line rounded-card border-2 border-lav bg-surface shadow-card">
           {days.map((day) => (
             <li key={day.id} className="flex items-center gap-3 p-4">
               <CalendarOff className="h-5 w-5 shrink-0 text-muted" aria-hidden="true" />
