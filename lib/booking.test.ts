@@ -22,9 +22,11 @@ if (!dbUrl) {
 }
 
 // This PC has a slow network: a TCP connect to Neon can take ~5 s, which
-// trips Prisma's default 5-second connect timeout. Raise it at runtime only
-// (.env is never edited). The recognized URL parameter is connect_timeout.
-const datasourceUrl = dbUrl.includes('connect_timeout') ? dbUrl : `${dbUrl}&connect_timeout=30`
+// trips Prisma's default 5-second connect timeout, and a slow query can hold
+// a pool connection past the default 10-second pool wait. Raise both at
+// runtime only (.env is never edited): connect_timeout, then pool_timeout.
+const withConnect = dbUrl.includes('connect_timeout') ? dbUrl : `${dbUrl}&connect_timeout=30`
+const datasourceUrl = withConnect.includes('pool_timeout') ? withConnect : `${withConnect}&pool_timeout=30`
 const prisma = new PrismaClient({ datasourceUrl })
 
 // A fixed clock, injected everywhere. All dates below are far in the future,

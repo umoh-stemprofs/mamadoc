@@ -47,7 +47,8 @@ export async function saveHours(
 
   // The weekly grid owns the whole week: in one transaction, drop this
   // doctor's old rules and write the enabled rows back. Only this doctor's
-  // rows are touched.
+  // rows are touched. (Prisma 5 accepts no timeout option for batch
+  // transactions; the pool wait is covered by pool_timeout in lib/db.ts.)
   await db.$transaction([
     db.availabilityRule.deleteMany({ where: { doctorId: doctor.id } }),
     ...(rules.length > 0

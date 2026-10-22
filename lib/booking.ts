@@ -32,6 +32,12 @@ export type BookResult =
 
 export type ActionResult = { ok: true } | { ok: false; error: string }
 
+// Slow-network budget: Prisma's defaults (5 s per interactive transaction,
+// 10 s waiting for a pool connection) are shorter than a round trip to the
+// hosted database can take here, which killed transactions mid-flight with
+// "Transaction not found". .env is never edited — the budgets live in code.
+const TX_OPTIONS = { maxWait: 10_000, timeout: 30_000 } as const
+
 export type CancelActor = { role: 'PATIENT' | 'DOCTOR'; userId: string }
 
 /**
@@ -179,7 +185,7 @@ export async function bookAppointment(
         ],
       })
       return appointment.id
-    })
+    }, TX_OPTIONS)
     return { ok: true, appointmentId, level, severe, message: patientMessage }
   } catch (e) {
     // (e) unique conflicts from the database constraints
@@ -268,7 +274,7 @@ export async function cancelAppointment(
         { toUserId: appointment.doctor.userId, toEmail: appointment.doctor.user.email, subject, body: doctorBody },
       ],
     })
-  })
+  }, TX_OPTIONS)
   return { ok: true }
 }
 
