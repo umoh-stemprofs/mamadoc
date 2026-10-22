@@ -3,6 +3,7 @@
 // and never reads the clock. Expected problems come back as { ok: false,
 // error } with one plain sentence — they never throw.
 
+import { randomBytes } from 'crypto'
 import type { Prisma, PrismaClient } from '@prisma/client'
 import { CANCEL_LEAD_HOURS, EMERGENCY_FALLBACK_NUMBER, LEAD_MINUTES, BOOKING_DAYS } from './config'
 import { confirmationMessage, doctorNotificationText } from './messages'
@@ -297,6 +298,14 @@ export async function markDone(
   }
   await prisma.appointment.update({ where: { id }, data: { status: 'DONE' } })
   return { ok: true }
+}
+
+/**
+ * Auto-generated demo room for a visit: https://meet.jit.si/MamaDoc-<appointmentId>-<random>.
+ * The random part is 16 hex chars; pass it explicitly to make it deterministic in tests.
+ */
+export function jitSiMeetingUrl(appointmentId: string, random = randomBytes(8).toString('hex')): string {
+  return `https://meet.jit.si/MamaDoc-${appointmentId}-${random}`
 }
 
 /** Doctor "Add meeting link" — the doctor of that visit only, https only. */

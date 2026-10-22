@@ -14,7 +14,7 @@ import {
   logout,
   recentFailedAttempts,
 } from '@/lib/auth'
-import { markDone, setMeetingUrl } from '@/lib/booking'
+import { jitSiMeetingUrl, markDone, setMeetingUrl } from '@/lib/booking'
 import { prisma } from '@/lib/db'
 import { addDayOff, removeDayOff, saveHours } from '@/lib/hours'
 import { homeForRole } from '@/lib/roles'
@@ -29,9 +29,10 @@ import {
   removeDayOffSchema,
   saveHoursSchema,
   signupSchema,
+  visitIdSchema,
 } from '@/lib/validation'
 
-export type ActionState = { error?: string; saved?: boolean } | undefined
+export type ActionState = { error?: string; saved?: boolean; url?: string } | undefined
 
 /** The current moment in APP_TZ — never the server's clock zone. */
 function appNow() {
@@ -137,7 +138,11 @@ export async function markVisitDoneAction(formData: FormData): Promise<void> {
   revalidatePath('/doctor')
 }
 
-/** Doctor saves a visit's meeting link — owning doctor, https only. */
+/**
+ * Doctor saves a visit's meeting link — owning doctor, https only.
+ * The "Generate meeting link" button posts intent=generate: the Jitsi room
+ * URL is built server-side and saved through this same ownership-checked path.
+ */
 export async function saveMeetingLinkAction(
   _prev: ActionState,
   formData: FormData,
@@ -145,6 +150,15 @@ export async function saveMeetingLinkAction(
   const session = await getSession()
   if (!session.userId || session.role !== 'DOCTOR') {
     return { error: 'You can only update your own visits.' }
+  }
+  if (formData.get('intent') === 'generate') {
+    const idParsed = visitIdSchema.safeParse({ id: formData.get('id') })
+    if (!idParsed.success) return { error: firstIssue(idParsed.error) }
+    const url = jitSiMeetingUrl(idParsed.data.id)
+    const generated = await setMeetingUrl(prisma, idParsed.data.id, session.userId, url)
+    if (!generated.ok) return { error: generated.error }
+    revalidatePath(`/doctor/visit/${idParsed.data.id}`)
+    return { url }
   }
   const parsed = meetingLinkSchema.safeParse({
     id: formData.get('id'),

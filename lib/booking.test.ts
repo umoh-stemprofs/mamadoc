@@ -11,6 +11,7 @@ import { PrismaClient } from '@prisma/client'
 import {
   bookAppointment,
   cancelAppointment,
+  jitSiMeetingUrl,
   markDone,
   setMeetingUrl,
   type BookAppointmentInput,
@@ -452,5 +453,28 @@ describe('markDone and setMeetingUrl', () => {
     const row = await prisma.appointment.findUnique({ where: { id: visitId } })
     expect(row?.meetingUrl).toBe('https://meet.example/abc')
     expect(row?.status).toBe('DONE')
+  })
+
+  it('the generated Jitsi link is an https URL setMeetingUrl accepts', async () => {
+    const url = jitSiMeetingUrl(visitId, 'abc123')
+    expect(url).toBe(`https://meet.jit.si/MamaDoc-${visitId}-abc123`)
+    const link = await setMeetingUrl(prisma, visitId, fx.doctor1UserId, url)
+    expect(link).toEqual({ ok: true })
+    const row = await prisma.appointment.findUnique({ where: { id: visitId } })
+    expect(row?.meetingUrl).toBe(url)
+  })
+})
+
+describe('jitSiMeetingUrl', () => {
+  it('builds https://meet.jit.si/MamaDoc-<appointmentId>-<random>', () => {
+    expect(jitSiMeetingUrl('cmv123', 'deadbeef')).toBe(
+      'https://meet.jit.si/MamaDoc-cmv123-deadbeef',
+    )
+  })
+
+  it('adds its own 16-hex-char random part when none is passed', () => {
+    expect(jitSiMeetingUrl('cmv123')).toMatch(
+      /^https:\/\/meet\.jit\.si\/MamaDoc-cmv123-[a-f0-9]{16}$/,
+    )
   })
 })

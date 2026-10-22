@@ -30,6 +30,11 @@ export const markReadSchema = z.object({
   id: z.string().min(1, 'That notification does not exist.'),
 })
 
+/** Just the visit id (generate-meeting-link button — the URL is built server-side). */
+export const visitIdSchema = z.object({
+  id: z.string().min(1, 'That visit does not exist.'),
+})
+
 export const meetingLinkSchema = z.object({
   id: z.string().min(1, 'That visit does not exist.'),
   url: z.string().trim().url('Enter a valid link.'), // https:// checked in setMeetingUrl

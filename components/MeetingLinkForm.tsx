@@ -1,7 +1,7 @@
 'use client'
 
 // Doctor "Add meeting link" — https only, checked on the server too.
-import { Video } from 'lucide-react'
+import { Sparkles, Video } from 'lucide-react'
 import { useFormState } from 'react-dom'
 import { saveMeetingLinkAction, type ActionState } from '@/app/lib/actions'
 
@@ -29,11 +29,12 @@ export function MeetingLinkForm({ visitId, initialUrl }: { visitId: string; init
           </label>
           <input
             id="meeting-url"
+            key={state?.url ?? initialUrl ?? ''}
             name="url"
             type="url"
             required
             placeholder="https://meet.example.com/visit"
-            defaultValue={initialUrl ?? ''}
+            defaultValue={state?.url ?? initialUrl ?? ''}
             className="block w-full rounded-input border border-line bg-surface px-3 py-3 text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent"
           />
         </div>
@@ -45,6 +46,21 @@ export function MeetingLinkForm({ visitId, initialUrl }: { visitId: string; init
           Save link
         </button>
       </div>
+      <button
+        type="submit"
+        name="intent"
+        value="generate"
+        formNoValidate
+        className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg border border-line bg-surface px-5 text-sm font-medium text-ink transition hover:bg-bg"
+      >
+        <Sparkles className="h-4 w-4" aria-hidden="true" />
+        Generate meeting link
+      </button>
+      {state?.url && (
+        <p role="status" className="text-sm text-success">
+          Meeting link generated and saved for this visit.
+        </p>
+      )}
       <p className="text-sm text-muted">
         The patient sees a &quot;Join call&quot; button once a link is saved.
       </p>
